@@ -1,12 +1,31 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="ko">
-<head>
-    <meta charset="UTF-8">
+<head> 
+    <meta charset="UTF-8"> 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>웹 페이지 제목</title>
+    <title>웹 페이지 제목</title> 
 </head>
-<body>
-    <h1>테스트 채팅방입니다. ㅎㅎㅎ</h1>
+<style>
+    #chatbox {
+            width: 400px; 
+            height: 300px; 
+            background-color: ghostwhite; 
+            border-style: double; 
+            scroll-behavior: smooth; 
+            overflow-y: scroll;
+            background-image: url('./chick.jpg'); /* 여기에 이미지 URL을 넣으세요 */
+            background-size: cover; /* 배경 이미지를 채팅 박스 크기에 맞추어 조정 */
+            background-position: center; /* 배경 이미지를 중앙에 배치 */
+            color: black; /* 기본 텍스트 색상 설정 */
+        }
+        #chatbox p {
+            background-color: rgba(255, 255, 255, 0.8); /* 흰색 반투명 배경색 */
+            padding: 5px; /* 텍스트 주변에 여백 추가 */
+            border-radius: 5px; /* 모서리를 둥글게 처리 */
+        }
+</style>
+<body> 
+    <h1>테스트 채팅방입니다. ㅎㅎㅎ</h1> 
     <form>
       <p>nickname : <input id="nickname" value="" disabled/></p>
       <p>msg : <input id="msg" value=""/></p>
@@ -17,28 +36,30 @@
     <div id="chatbox" style="width:400px; height:300px; background-color: ghostwhite; border-style: double; scroll-behavior: smooth; overflow-y: scroll;">
     </div>
     <script>
-        //var exampleSocket = new WebSocket("ws://hellotect2022.synology.me:9377");
-        var exampleSocket = new WebSocket("ws://localhost:7777");
+        //var exampleSocket = new WebSocket("ws://hellotect2022.synology.me:9377");    
+        var exampleSocket = new WebSocket("ws://localhost:7777"); 
+        
         // JavaScript 코드를 여기에 작성합니다.
         function sayHello() {
             var name = document.getElementById("nickname").value;
             exampleSocket.send(`${name} : hello!!`)
-
+            
         }
 
         function sayMessage() {
             //console.log(document.getElementById("nickname"))
             var name = document.getElementById("nickname").value;
             var msg = document.getElementById("msg").value;
-            document.getElementById("msg").value="";
-            exampleSocket.send(`${name} : ${msg}`)
+            exampleSocket.send(`${name} : ${msg}`);
+	        document.getElementById('msg').value = '';
         }
 
         exampleSocket.onmessage = function (event){
             //console.log("onmessage", event.data);
-
+            console.log('111',event.data=='')
             currentdata = document.getElementById("chatbox").innerHTML
-            document.getElementById("chatbox").innerHTML = currentdata+`<p>${event.data}<p/>`
+            console.log('??',currentdata)
+            document.getElementById("chatbox").innerHTML = currentdata + `<p>${event.data}</p>`
             scrollToBottom()
         }
 
@@ -63,7 +84,7 @@
                 exampleSocket.close()
 
             }
-
+            
             //console.log("onopen", event);
         }
 
@@ -93,7 +114,7 @@
             var chatBox = document.getElementById('chatbox');
             chatBox.scrollTop = chatBox.scrollHeight;
         }
-
+        
     </script>
 </body>
 </html>
