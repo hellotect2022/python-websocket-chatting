@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>웹 페이지 제목</title>
+</head>
+<body>
+    <h1>테스트 채팅방입니다. ㅎㅎㅎ</h1>
+    <form>
+      <p>nickname : <input id="nickname" value="" disabled/></p>
+      <p>msg : <input id="msg" value=""/></p>
+    </form>
+    <button id="send" onclick="sayMessage()">send</button>
+       <button id="hello" onclick="sayHello()">hello</button>
+
+    <div id="chatbox" style="width:400px; height:300px; background-color: ghostwhite; border-style: double; scroll-behavior: smooth; overflow-y: scroll;">
+    </div>
+    <script>
+        //var exampleSocket = new WebSocket("ws://hellotect2022.synology.me:9377");
+        var exampleSocket = new WebSocket("ws://localhost:7777");
+        // JavaScript 코드를 여기에 작성합니다.
+        function sayHello() {
+            var name = document.getElementById("nickname").value;
+            exampleSocket.send(`${name} : hello!!`)
+
+        }
+
+        function sayMessage() {
+            //console.log(document.getElementById("nickname"))
+            var name = document.getElementById("nickname").value;
+            var msg = document.getElementById("msg").value;
+            document.getElementById("msg").value="";
+            exampleSocket.send(`${name} : ${msg}`)
+        }
+
+        exampleSocket.onmessage = function (event){
+            //console.log("onmessage", event.data);
+
+            currentdata = document.getElementById("chatbox").innerHTML
+            document.getElementById("chatbox").innerHTML = currentdata+`<p>${event.data}<p/>`
+            scrollToBottom()
+        }
+
+        exampleSocket.onclose= function (event){
+            //document.getElementById("chatbox").innerHTML = currentdata+`<p>${name}님이 나가셨습니다.<p/>`
+            exampleSocket.send(`${name}님이 나가셨습니다`)
+        }
+
+        exampleSocket.onerror= function (event){
+            //console.log("onerror", event);
+            exampleSocket.send(`${name}님이 나가셨습니다`)
+        }
+
+        exampleSocket.onopen= function (event){
+            if(showPrompt()){
+                currentdata = document.getElementById("chatbox").innerHTML
+                var name = document.getElementById("nickname").value;
+
+                //document.getElementById("chatbox").innerHTML = currentdata+`<p>${name}님이 들어왔습니다<p/>`
+                exampleSocket.send(`${name}님이 들어왔습니다`)
+            }else{
+                exampleSocket.close()
+
+            }
+
+            //console.log("onopen", event);
+        }
+
+        window.addEventListener('beforeunload', function(event) {
+            // 웹 소켓이 열려있는 경우에만 연결을 종료합니다.
+            alert('ff')
+            if (exampleSocket.readyState === WebSocket.OPEN) {
+                exampleSocket.close();
+            }
+        });
+
+        function showPrompt() {
+            // 사용자로부터 값을 입력받습니다.
+            var userInput = prompt("이름을 입력하세요:", "");
+            console.log('f',userInput !==null , userInput !=="")
+            // 입력받은 값이 null이 아니라면 alert 창에 표시합니다.
+            if (userInput !== null && userInput !== "") {
+                alert("안녕하세요, " + userInput + "님 입장을 환영합니다.");
+                document.getElementById("nickname").value=userInput;
+                return true
+            }else{
+                return false
+            }
+        }
+
+        function scrollToBottom() {
+            var chatBox = document.getElementById('chatbox');
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+    </script>
+</body>
+</html>
+
